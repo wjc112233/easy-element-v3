@@ -1,11 +1,18 @@
-import { ref, type Ref, nextTick, reactive, onMounted, getCurrentInstance } from 'vue'
+import {
+  type Ref,
+  getCurrentInstance,
+  nextTick,
+  onMounted,
+  reactive,
+  ref,
+} from 'vue'
 import { isArray } from 'lodash-es'
-import type { CrudConfig, ElTableInstance } from './crud'
 import { ElLoading } from 'element-plus'
+import type { CrudConfig, ElTableInstance } from './crud'
 
 export function useData<
   DataItem = Record<string, any>,
-  Query = Record<string, any>,
+  Query = Record<string, any>
 >({
   config,
   elTableRef,
@@ -32,13 +39,13 @@ export function useData<
   const getTableData = async () => {
     const loading = ElLoading.service({
       lock: true,
-      target: vm?.proxy?.$el.querySelector('.el-table')
+      target: vm?.proxy?.$el.querySelector('.el-table'),
     })
     try {
       const res = await config.requestApi({
         pageNo: currentPage.value,
         pageSize: pageSize.value,
-        ...query
+        ...query,
       } as any)
 
       // 重载table组件
@@ -48,12 +55,9 @@ export function useData<
       }
 
       if (isArray(res.data)) {
-        tableData.splice(0, tableData.length, ...res.data as any)
+        tableData.splice(0, tableData.length, ...(res.data as any))
       } else {
-        console.error(
-          '表格列表需要为一个数组，实际得到的数据为：',
-          res.data
-        )
+        console.error('表格列表需要为一个数组，实际得到的数据为：', res.data)
       }
 
       totalPages.value = res.totalPages
@@ -69,11 +73,13 @@ export function useData<
 
       // 重置y轴滚动
       nextTick(() => {
-        elTableRef.value!.$el.querySelector('.el-table__body-wrapper').scrollTop = 0
+        elTableRef.value!.$el.querySelector(
+          '.el-table__body-wrapper'
+        ).scrollTop = 0
       })
 
       initialized = true
-    } catch (e) {
+    } catch {
       isError.value = true
       tableData.length = 0
     } finally {

@@ -1,6 +1,6 @@
-import { ElCheckboxGroup, ElCheckbox } from "element-plus"
-import { h } from "vue"
-import type { RenderComponentFn } from "../form"
+import { h } from 'vue'
+import { ElCheckbox, ElCheckboxGroup } from 'element-plus'
+import type { RenderComponentFn } from '../form'
 
 export const Checkbox: RenderComponentFn<any, any> = (ctx) => {
   return (
@@ -11,7 +11,7 @@ export const Checkbox: RenderComponentFn<any, any> = (ctx) => {
     >
       {{
         default: () => {
-          return ctx.formItem.options?.map(opt => {
+          return ctx.formItem.options?.map((opt) => {
             return (
               <ElCheckbox label={opt.value} {...opt.attrs}>
                 {{
@@ -21,13 +21,13 @@ export const Checkbox: RenderComponentFn<any, any> = (ctx) => {
                     ) : (
                       <span>{opt.label}</span>
                     )
-                  }
+                  },
                 }}
               </ElCheckbox>
             )
           })
         },
-        ...(ctx.formItem.componentSlots || {})
+        ...(ctx.formItem.componentSlots || {}),
       }}
     </ElCheckboxGroup>
   )

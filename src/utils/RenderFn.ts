@@ -1,4 +1,4 @@
-import { h, type VNode } from 'vue'
+import { type VNode, h } from 'vue'
 
 export const RenderFn: RenderFnType = (props) => {
   return h(props.component, props)

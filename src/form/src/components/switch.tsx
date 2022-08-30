@@ -1,6 +1,6 @@
-import { ElSwitch } from "element-plus"
-import { h } from "vue"
-import type { RenderComponentFn } from "../form"
+import { h } from 'vue'
+import { ElSwitch } from 'element-plus'
+import type { RenderComponentFn } from '../form'
 
 export const Switch: RenderComponentFn<any, any> = (ctx) => {
   return (

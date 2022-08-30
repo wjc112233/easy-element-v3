@@ -1,6 +1,6 @@
-import { ElSlider } from "element-plus"
-import { h } from "vue"
-import type { RenderComponentFn } from "../form"
+import { h } from 'vue'
+import { ElSlider } from 'element-plus'
+import type { RenderComponentFn } from '../form'
 
 export const Slider: RenderComponentFn<any, any> = (ctx) => {
   return (

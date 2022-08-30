@@ -1,23 +1,30 @@
 <script lang="ts" setup>
-import { ElTable, ElTableColumn, ElPagination, ElButton, ElCard, ElIcon } from 'element-plus';
-import { isFunction, merge, isString, omit } from 'lodash-es';
-import { computed, isRef, ref, provide } from 'vue';
+import { computed, isRef, provide, ref } from 'vue'
+import {
+  ElButton,
+  ElCard,
+  ElIcon,
+  ElPagination,
+  ElTable,
+  ElTableColumn,
+} from 'element-plus'
+import { isFunction, isString, merge, omit } from 'lodash-es'
+import { RefreshLeft } from '@element-plus/icons-vue'
 import VTableAction from './table-action.vue'
-import CreateAndUpdatePopup from './create-and-update-popup.vue';
+import CreateAndUpdatePopup from './create-and-update-popup.vue'
 import Setting from './setting.vue'
-import { RenderFn } from '@/utils/RenderFn'
 import {
   DEFAULT_PRIMARY_KEY,
-  _crudProps,
   type ElTableInstance,
   type TableExpand,
-  type VTableColumn
+  type VTableColumn,
+  _crudProps,
 } from './crud'
 import { useData } from './useData'
 import { CacheManagement, cacheManagementInjectKey } from './useCache'
-import { VForm, type VFormConfig } from '@/form';
-import { transformItems } from './helpers';
-import { RefreshLeft } from '@element-plus/icons-vue';
+import { transformItems } from './helpers'
+import { VForm, type VFormConfig } from '@/form'
+import { RenderFn } from '@/utils/RenderFn'
 
 const props = defineProps(_crudProps)
 
@@ -52,15 +59,18 @@ const {
 } = useData({ config: crudConfig.value, elTableRef })
 
 const tableAttrs = computed(() => {
-  return Object.assign({
-    rowKey: crudConfig.value.primaryKey || DEFAULT_PRIMARY_KEY
-  }, crudConfig.value.tableAttrs)
+  return Object.assign(
+    {
+      rowKey: crudConfig.value.primaryKey || DEFAULT_PRIMARY_KEY,
+    },
+    crudConfig.value.tableAttrs
+  )
 })
 
 const tableExpand = computed<TableExpand>(() => {
   if (isFunction(crudConfig.value.tableExpand)) {
     return {
-      render: crudConfig.value.tableExpand
+      render: crudConfig.value.tableExpand,
     }
   } else {
     return crudConfig.value.tableExpand!
@@ -84,19 +94,22 @@ const searchConfig = computed(() => {
 
   const conf = { ...crudConfig.value.searchConfig }
 
-  conf.itemColAttrs = Object.assign({
-    offset: 1,
-    span: 7
-  }, conf.itemColAttrs)
+  conf.itemColAttrs = Object.assign(
+    {
+      offset: 1,
+      span: 7,
+    },
+    conf.itemColAttrs
+  )
 
   conf.action = merge(
     {},
     {
       notResetFormAfterSubmited: true,
       colAttrs: { span: 24, style: 'text-align:center' },
-      submitButton: { text: '搜索' }
+      submitButton: { text: '搜索' },
     },
-    conf.action,
+    conf.action
   )
   const originalOnSubmit = conf.action.onSubmit
   conf.action.onSubmit = (data) => {
@@ -119,7 +132,7 @@ const paginationConfig = computed(() => {
     {
       pageSizes: [10, 20, 30, 40, 50, 100],
       total: totalCount.value || 0,
-      layout: 'total,sizes,prev,pager,next,jumper'
+      layout: 'total,sizes,prev,pager,next,jumper',
     },
     crudConfig.value.paginationAttrs
   )
@@ -143,13 +156,12 @@ const createButton = computed(() => {
 
   const defaultAttrs = {
     name: '新增',
-    attrs: { type: 'primary' } as const
+    attrs: { type: 'primary' } as const,
   }
   return isFunction(crudConfig.value.handleCreate)
     ? defaultAttrs
     : merge(defaultAttrs, crudConfig.value.handleCreate)
 })
-
 </script>
 
 <template>
@@ -217,7 +229,9 @@ const createButton = computed(() => {
         <ElTableColumn
           v-if="crudConfig.tableSelection"
           type="selection"
-          v-bind="crudConfig.tableSelection === true ? {} : crudConfig.tableSelection"
+          v-bind="
+            crudConfig.tableSelection === true ? {} : crudConfig.tableSelection
+          "
         />
 
         <ElTableColumn
@@ -241,20 +255,28 @@ const createButton = computed(() => {
             <RenderFn
               :component="col.renderContent"
               :value="scope.row[prop]"
-              :dict="col.dicts ? col.dicts.find(d => d.value === scope.row[prop]) : undefined"
+              :dict="
+                col.dicts
+                  ? col.dicts.find((d) => d.value === scope.row[prop])
+                  : undefined
+              "
               v-bind="scope"
             />
           </template>
         </ElTableColumn>
 
         <VTableAction
-          v-if="crudConfig.tableAction || crudConfig.handleDelete || crudConfig.handleUpdate"
+          v-if="
+            crudConfig.tableAction ||
+            crudConfig.handleDelete ||
+            crudConfig.handleUpdate
+          "
           :config="crudConfig"
           :refresh="refresh"
-          :toUpdate="(row: any) => createAndUpdatePopupRef?.show(row)"
+          :to-update="(row: any) => createAndUpdatePopupRef?.show(row)"
         />
       </ElTable>
-      
+
       <div class="body-footer">
         <slot name="footer-left" />
         <ElPagination
@@ -319,7 +341,6 @@ const createButton = computed(() => {
         justify-content: flex-end;
       }
     }
-    
   }
 }
 </style>

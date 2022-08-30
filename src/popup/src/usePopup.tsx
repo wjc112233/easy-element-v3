@@ -1,13 +1,13 @@
-import { omit } from "lodash-es"
-import { getCurrentInstance, onBeforeMount, ref, h, type Slots } from "vue"
-import type { VPopupInstance, VPopupProps } from "./popup"
+import { type Slots, getCurrentInstance, h, onBeforeMount, ref } from 'vue'
+import { omit } from 'lodash-es'
 import Popup from './popup.vue'
+import type { VPopupInstance, VPopupProps } from './popup'
 
 type PopupConfig<T = any> = Partial<VPopupProps> & {
   beforeShow?: (params?: T) => Promise<false | void> | false | void
 }
 
-export const usePopup = function<T>(config: PopupConfig<T>, slots?: Slots) {
+export const usePopup = function <T>(config: PopupConfig<T>, slots?: Slots) {
   const vm: any = getCurrentInstance()
   const popupRef = ref<VPopupInstance>()
 
@@ -15,13 +15,10 @@ export const usePopup = function<T>(config: PopupConfig<T>, slots?: Slots) {
     const originalRender = vm.render
     vm.render = function (...args: any[]) {
       const vnode = (
-        <Popup
-          ref={popupRef}
-          {...omit(config, 'beforeShow')}
-        >
+        <Popup ref={popupRef} {...omit(config, 'beforeShow')}>
           {{
             default: () => originalRender(...args),
-            ...slots
+            ...slots,
           }}
         </Popup>
       )
@@ -30,7 +27,7 @@ export const usePopup = function<T>(config: PopupConfig<T>, slots?: Slots) {
   })
 
   return {
-    show: async(params?: T) => {
+    show: async (params?: T) => {
       if (config.beforeShow) {
         const ret = await config.beforeShow(params)
         if (ret === false) {

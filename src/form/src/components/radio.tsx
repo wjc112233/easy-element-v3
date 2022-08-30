@@ -1,6 +1,6 @@
-import { ElRadioGroup, ElRadio } from "element-plus"
-import { h } from "vue"
-import type { RenderComponentFn } from "../form"
+import { h } from 'vue'
+import { ElRadio, ElRadioGroup } from 'element-plus'
+import type { RenderComponentFn } from '../form'
 
 export const Radio: RenderComponentFn<any, any> = (ctx) => {
   return (
@@ -11,7 +11,7 @@ export const Radio: RenderComponentFn<any, any> = (ctx) => {
     >
       {{
         default: () => {
-          return ctx.formItem.options?.map(opt => {
+          return ctx.formItem.options?.map((opt) => {
             return (
               <ElRadio label={opt.value} {...opt.attrs}>
                 {{
@@ -21,13 +21,13 @@ export const Radio: RenderComponentFn<any, any> = (ctx) => {
                     ) : (
                       <span>{opt.label}</span>
                     )
-                  }
+                  },
                 }}
               </ElRadio>
             )
           })
         },
-        ...(ctx.formItem.componentSlots || {})
+        ...(ctx.formItem.componentSlots || {}),
       }}
     </ElRadioGroup>
   )

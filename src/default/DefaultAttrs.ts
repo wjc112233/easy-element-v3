@@ -10,7 +10,7 @@ export class DefaultAttrs<T extends Record<string | number | symbol, any>> {
     return this._attrs[k]
   }
   set(attrs: Partial<T>) {
-    for(const k in attrs) {
+    for (const k in attrs) {
       this._attrs[k] = attrs[k]!
     }
   }

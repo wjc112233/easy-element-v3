@@ -1,9 +1,9 @@
-import { ElDatePicker } from "element-plus"
-import { h } from "vue"
-import type { RenderComponentFn } from "../form"
+import { h } from 'vue'
+import { ElDatePicker } from 'element-plus'
+import type { RenderComponentFn } from '../form'
 
 export const DatePicker: RenderComponentFn<any, any> = (ctx) => {
-  const formItem = ctx.formItem = { ...ctx.formItem }
+  const formItem = (ctx.formItem = { ...ctx.formItem })
   const attrs = formItem.componentAttrs || (formItem.componentAttrs = {})
   attrs.type = attrs.type || 'datetime'
   attrs.valueFormat = attrs.valueFormat || 'YYYY-MM-DD HH:mm:ss'

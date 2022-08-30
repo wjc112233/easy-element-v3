@@ -1,20 +1,20 @@
 <script lang="ts" setup>
-import { usePopup } from '@/popup';
-import { VForm, type VFormConfig } from '@/form';
-import { DEFAULT_PRIMARY_KEY, type CrudConfig } from './crud';
-import { computed, nextTick, ref, type PropType } from 'vue';
-import { isFunction } from 'lodash-es';
-import { transformItems } from './helpers';
+import { type PropType, computed, nextTick, ref } from 'vue'
+import { isFunction } from 'lodash-es'
+import { type CrudConfig, DEFAULT_PRIMARY_KEY } from './crud'
+import { transformItems } from './helpers'
+import { VForm, type VFormConfig } from '@/form'
+import { usePopup } from '@/popup'
 
 const props = defineProps({
   config: {
     type: Object as PropType<CrudConfig>,
-    required: true
+    required: true,
   },
   refresh: {
     type: Function,
-    required: true
-  }
+    required: true,
+  },
 })
 
 const formRef = ref<InstanceType<typeof VForm>>()
@@ -27,9 +27,10 @@ const config = isFunction(props.config.createAndUpdateConfig)
 const onOpen = () => {
   const updateForm = () => {
     if (isUpdateMode.value) {
-      rowData && Object.keys(formAttrs.value.items).forEach((key) => {
-        formRef.value!.setValue(key, rowData![key])
-      })
+      rowData &&
+        Object.keys(formAttrs.value.items).forEach((key) => {
+          formRef.value!.setValue(key, rowData![key])
+        })
     } else {
       formRef.value!.deleteAllKey()
     }
@@ -42,17 +43,17 @@ const onOpen = () => {
   config.popupAttrs?.onOpened?.()
 }
 
-const onConfirm = async() => {
+const onConfirm = async () => {
   popup.setContentLoading(true)
   try {
-    let params = await formRef.value!.validate()
-    
+    const params = await formRef.value!.validate()
+
     if (isUpdateMode.value) {
       const handler = isFunction(props.config.handleUpdate)
         ? props.config.handleUpdate
         : props.config.handleUpdate!.handler
       const primaryKey = props.config.primaryKey || DEFAULT_PRIMARY_KEY
-      if (primaryKey && (primaryKey in rowData!)) {
+      if (primaryKey && primaryKey in rowData!) {
         params[primaryKey] = rowData[primaryKey]
       }
       await handler(params, rowData!)
@@ -67,20 +68,23 @@ const onConfirm = async() => {
       props.refresh()
       popup.close()
     }, 500)
-  } catch (e) {
+  } catch {
     popup.setContentLoading(false)
   }
 }
 
 const popupAttrs = computed(() => {
-  const attrs = Object.assign({
-    title: isUpdateMode.value ? '编辑' : '新增',
-    closeOnClickModal: false
-  }, config.popupAttrs)
+  const attrs = Object.assign(
+    {
+      title: isUpdateMode.value ? '编辑' : '新增',
+      closeOnClickModal: false,
+    },
+    config.popupAttrs
+  )
   attrs.onOpen = onOpen
   attrs.footer = {
     ...attrs.footer,
-    onConfirm
+    onConfirm,
   }
   return attrs
 })
@@ -97,12 +101,12 @@ const popup = usePopup<Record<string, any> | undefined>({
   beforeShow(dataItem) {
     rowData = dataItem
     isUpdateMode.value = !!dataItem
-  }
+  },
 })
 
 defineExpose(popup)
 </script>
 
 <template>
-<VForm ref="formRef" :config="formAttrs" />
+  <VForm ref="formRef" :config="formAttrs" />
 </template>

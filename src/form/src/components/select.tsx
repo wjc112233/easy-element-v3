@@ -1,6 +1,6 @@
-import { ElSelect, ElOption } from "element-plus"
-import { h } from "vue"
-import type { RenderComponentFn } from "../form"
+import { h } from 'vue'
+import { ElOption, ElSelect } from 'element-plus'
+import type { RenderComponentFn } from '../form'
 
 export const Select: RenderComponentFn<any, any> = (ctx) => {
   return (
@@ -11,17 +11,19 @@ export const Select: RenderComponentFn<any, any> = (ctx) => {
     >
       {{
         default: () => {
-          return ctx.formItem.options?.map(opt => {
+          return ctx.formItem.options?.map((opt) => {
             return (
               <ElOption label={opt.label} value={opt.value} {...opt.attrs}>
-                {ctx.formItem.optionRender ? {
-                  default: () => ctx.formItem.optionRender?.(opt)
-                } : null}
+                {ctx.formItem.optionRender
+                  ? {
+                      default: () => ctx.formItem.optionRender?.(opt),
+                    }
+                  : null}
               </ElOption>
             )
           })
         },
-        ...(ctx.formItem.componentSlots || {})
+        ...(ctx.formItem.componentSlots || {}),
       }}
     </ElSelect>
   )

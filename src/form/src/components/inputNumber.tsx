@@ -1,6 +1,6 @@
-import { ElInputNumber } from "element-plus"
-import { h } from "vue"
-import type { RenderComponentFn } from "../form"
+import { h } from 'vue'
+import { ElInputNumber } from 'element-plus'
+import type { RenderComponentFn } from '../form'
 
 export const InputNumber: RenderComponentFn<any, any> = (ctx) => {
   return (

@@ -1,16 +1,27 @@
 import type { RenderFnType } from '@/utils/RenderFn'
-import type { ButtonWithText, MergeAttrs, PartialMutable, ReplaceType, SetDataFn, WithNativeAttrs } from '@/utils/typescript'
+import type {
+  ButtonWithText,
+  MergeAttrs,
+  PartialMutable,
+  SetDataFn,
+  WithNativeAttrs,
+} from '@/utils/typescript'
 import type {
   ColProps,
   FormInstance,
   FormItemProps,
   FormItemRule,
   RowProps,
-  ButtonType,
-  ButtonProps
 } from 'element-plus'
 import type { Mutable } from 'element-plus/es/utils'
-import type { Ref, Slots, DefineComponent, VNode, TeleportProps, PropType } from 'vue'
+import type {
+  DefineComponent,
+  PropType,
+  Ref,
+  Slots,
+  TeleportProps,
+  VNode,
+} from 'vue'
 
 type ComponentOption = {
   label: string
@@ -92,30 +103,32 @@ export interface VFormConfig<FormModel = Record<string, any>> {
   formAttrs?: MergeAttrs<Mutable<FormInstance['props']>>
   rowAttrs?: WithNativeAttrs<Partial<Mutable<RowProps>>>
   itemColAttrs?: ColAttrs
-  action: false | {
-    colAttrs?: ColAttrs
-    resetButton?: false | ButtonWithText
-    submitButton?: ButtonWithText
-    /**
-     * 提交成功默认会重置表单，设置为true则不重置表单
-     */
-    notResetFormAfterSubmited?: true
-    onSubmit: (data: FormModel) => any
-    onReset?: () => any
-  }
+  action:
+    | false
+    | {
+        colAttrs?: ColAttrs
+        resetButton?: false | ButtonWithText
+        submitButton?: ButtonWithText
+        /**
+         * 提交成功默认会重置表单，设置为true则不重置表单
+         */
+        notResetFormAfterSubmited?: true
+        onSubmit: (data: FormModel) => any
+        onReset?: () => any
+      }
 }
 
 export type FormProps<FormModel = Record<string, any>> = {
   config: {
-    type: PropType<VFormConfig<FormModel>>,
+    type: PropType<VFormConfig<FormModel>>
     required: true
   }
 }
 export const formProps: FormProps = {
   config: {
     type: Object as PropType<VFormConfig>,
-    required: true
-  }
+    required: true,
+  },
 }
 export type FormRawBindings<FormModel = Record<string, any>> = {
   setValue: SetDataFn<FormModel>
@@ -130,5 +143,10 @@ export type FormRawBindings<FormModel = Record<string, any>> = {
   validate: () => Promise<FormModel>
   reset: () => void
 }
-export type VFormConstructor<FormModel = Record<string, any>> = DefineComponent<FormProps<FormModel>, FormRawBindings<FormModel>>
-export type VFormInstance<FormModel = Record<string, any>> = InstanceType<VFormConstructor<FormModel>>
+export type VFormConstructor<FormModel = Record<string, any>> = DefineComponent<
+  FormProps<FormModel>,
+  FormRawBindings<FormModel>
+>
+export type VFormInstance<FormModel = Record<string, any>> = InstanceType<
+  VFormConstructor<FormModel>
+>

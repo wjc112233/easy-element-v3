@@ -1,11 +1,8 @@
-import type { VFormItem } from "@/form";
-import { isBoolean, isString } from "lodash-es";
-import type { Columns, CrudForm, VTableColumn } from "./crud";
+import { isBoolean, isString } from 'lodash-es'
+import type { VFormItem } from '@/form'
+import type { Columns, CrudForm, VTableColumn } from './crud'
 
-export function transformItems(
-  items: CrudForm['items'],
-  columns: Columns
-) {
+export function transformItems(items: CrudForm['items'], columns: Columns) {
   items = { ...items }
   let column: VTableColumn | string
   for (const key in items) {
@@ -14,16 +11,16 @@ export function transformItems(
       if (isString(column)) {
         items[key] = {
           label: column,
-          component: 'Input'
+          component: 'Input',
         }
       } else {
         items[key] = {
           label: column.label,
           component: column.dicts ? 'Select' : 'Input',
-          options: column.dicts?.map(item => ({
+          options: column.dicts?.map((item) => ({
             label: item.label,
-            value: item.value
-          }))
+            value: item.value,
+          })),
         }
       }
     }

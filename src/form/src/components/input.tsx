@@ -1,6 +1,6 @@
-import { ElInput } from "element-plus"
-import { h } from "vue"
-import type { RenderComponentFn } from "../form"
+import { h } from 'vue'
+import { ElInput } from 'element-plus'
+import type { RenderComponentFn } from '../form'
 
 export const Input: RenderComponentFn<any, any> = (ctx) => {
   return (
@@ -15,7 +15,7 @@ export const Input: RenderComponentFn<any, any> = (ctx) => {
 }
 
 export const Textarea: RenderComponentFn<any, any> = (ctx) => {
-  const formItem = ctx.formItem = { ...ctx.formItem }
+  const formItem = (ctx.formItem = { ...ctx.formItem })
   ;(formItem.componentAttrs || (formItem.componentAttrs = {})).type = 'textarea'
   return Input(ctx)
 }

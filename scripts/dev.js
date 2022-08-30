@@ -8,27 +8,26 @@ const NodeResolve = require('@rollup/plugin-node-resolve').default
 const Commonjs = require('@rollup/plugin-commonjs')
 const esbuild = require('rollup-plugin-esbuild').default
 const Postcss = require('rollup-plugin-postcss')
-const Eslint = require('@rollup/plugin-eslint')
 
 const pkgJson = require('../package.json')
 
 const projRoot = resolve(__dirname, '..')
 
-const buildFile = async() => {
+const buildFile = async () => {
   const peerDependencies = Object.keys(pkgJson.peerDependencies)
   const bundle = await rollup({
     input: 'src/index.ts',
     watch: {
-      include: ['src/**']
+      include: ['src/**'],
     },
     plugins: [
       alias({
         entries: [
           {
             find: '@',
-            replacement: resolve(projRoot, 'src')
-          }
-        ]
+            replacement: resolve(projRoot, 'src'),
+          },
+        ],
       }),
       Vue({
         isProduction: false,
@@ -51,10 +50,9 @@ const buildFile = async() => {
         contentBase: 'example',
       }),
       Livereload('example'),
-      Eslint({ fix: true })
     ],
-    external: id => {
-      return peerDependencies.some(pkg => {
+    external: (id) => {
+      return peerDependencies.some((pkg) => {
         return pkg === id || id.startsWith(`${pkg}/`)
       })
     },
@@ -67,8 +65,8 @@ const buildFile = async() => {
     globals: {
       vue: 'Vue',
       'element-plus': 'ElementPlus',
-      'lodash-es': '_'
-    }
+      'lodash-es': '_',
+    },
   })
 }
 

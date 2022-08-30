@@ -1,5 +1,5 @@
-import { DefaultAttrs } from '@/default/DefaultAttrs'
 import type { FormControlComponent } from '../form'
+import { DefaultAttrs } from '@/default/DefaultAttrs'
 
 export * from './select'
 export * from './input'
@@ -11,4 +11,6 @@ export * from './checkbox'
 export * from './slider'
 export * from './switch'
 
-export const components = new DefaultAttrs<Record<string, FormControlComponent>>({})
+export const components = new DefaultAttrs<
+  Record<string, FormControlComponent>
+>({})
