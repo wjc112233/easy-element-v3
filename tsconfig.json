@@ -1,0 +1,22 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.web.json",
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "jsx": "preserve",
+    "types": [
+      "element-plus/global",
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "types/**/*.d.ts",
+    "env.d.ts"
+  ],
+  "exclude": ["node_modules", "dist", "**/*.js"]
+}
