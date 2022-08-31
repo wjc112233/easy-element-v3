@@ -10,6 +10,7 @@ import {
 import Sortable from 'sortablejs'
 import { isBoolean, isNumber, isString } from 'lodash-es'
 import { Download, Rank, Setting } from '@element-plus/icons-vue'
+
 import {
   type FieldColumnCacheRecord,
   cacheManagementInjectKey,
@@ -22,16 +23,16 @@ const props = defineProps({
     required: true,
   },
 })
-
 const containerEl = ref<HTMLDivElement>()
-
 const cacheManagement = inject(cacheManagementInjectKey)
+
 type Item = {
   show: boolean
   prop: string
   label: string
   fixed?: FieldColumnCacheRecord['fixed']
 }
+// 根据'config.columns'得到一个'Array<Item>'类型的数组
 const items = computed(() => {
   const colsRecord = cacheManagement?.getRecord()?.columnsRecord
   const indexedItems: Array<Item> = []

@@ -1,4 +1,4 @@
-import { type InjectionKey, reactive } from 'vue'
+import { type InjectionKey, computed, provide, reactive } from 'vue'
 import { isArray, isBoolean, isEmpty, isString, merge } from 'lodash-es'
 import type { TableColumnCtx } from 'element-plus/es/components/table/src/table-column/defaults'
 import type { CrudConfig, VTableColumn } from './crud'
@@ -152,4 +152,13 @@ export class CacheManagement {
   private _getKey() {
     return this.keyPrefix + this.conf.cacheKey
   }
+}
+
+export const useCache = (config: CrudConfig) => {
+  const cacheManegement = new CacheManagement(config)
+  provide(cacheManagementInjectKey, cacheManegement)
+  const crudConfig = computed(() => {
+    return cacheManegement.mergeConfig()
+  })
+  return { crudConfig }
 }

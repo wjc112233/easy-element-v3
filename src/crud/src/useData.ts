@@ -1,58 +1,39 @@
 import {
-  type Ref,
+  type ComputedRef,
   getCurrentInstance,
-  nextTick,
   onMounted,
   reactive,
   ref,
 } from 'vue'
 import { isArray } from 'lodash-es'
 import { ElLoading } from 'element-plus'
-import type { CrudConfig, ElTableInstance } from './crud'
+import type { CrudConfig } from './crud'
 
 export function useData<
   DataItem = Record<string, any>,
   Query = Record<string, any>
->({
-  config,
-  elTableRef,
-}: {
-  config: CrudConfig<DataItem, Query>
-  elTableRef: Ref<ElTableInstance | undefined>
-}) {
+>(crudConfig: ComputedRef<CrudConfig<DataItem, Query>>) {
   const vm = getCurrentInstance()
 
-  // 用来重载table组件
-  const tableKey = ref(Symbol())
   const tableData = reactive<Array<DataItem>>([])
   const currentPage = ref(1)
-  const totalPages = ref<number>()
-  const totalCount = ref<number>()
-  const pageSize = ref(config.paginationAttrs?.defaultPageSize ?? 10)
-  // 请求出现错误
+  const totalPages = ref<number>(0)
+  const totalCount = ref<number>(0)
+  const pageSize = ref(crudConfig.value.paginationAttrs?.defaultPageSize ?? 10)
   const isError = ref(false)
-  // 是否已经初始化过
-  let initialized = false
   let query: Record<string, any> = {}
 
-  // 获取表格数据
   const getTableData = async () => {
     const loading = ElLoading.service({
       lock: true,
       target: vm?.proxy?.$el.querySelector('.el-table'),
     })
     try {
-      const res = await config.requestApi({
+      const res = await crudConfig.value.requestApi({
         pageNo: currentPage.value,
         pageSize: pageSize.value,
         ...query,
       } as any)
-
-      // 重载table组件
-      if (isError.value || tableData.length === 0) {
-        tableKey.value = Symbol()
-        isError.value = false
-      }
 
       if (isArray(res.data)) {
         tableData.splice(0, tableData.length, ...(res.data as any))
@@ -62,23 +43,6 @@ export function useData<
 
       totalPages.value = res.totalPages
       totalCount.value = res.count
-      // pageSize.value = res.pageSize
-
-      // 调用doLayout优化布局错误的问题
-      if (!initialized) {
-        nextTick(() => {
-          elTableRef.value!.doLayout()
-        })
-      }
-
-      // 重置y轴滚动
-      nextTick(() => {
-        elTableRef.value!.$el.querySelector(
-          '.el-table__body-wrapper'
-        ).scrollTop = 0
-      })
-
-      initialized = true
     } catch {
       isError.value = true
       tableData.length = 0
@@ -87,25 +51,22 @@ export function useData<
     }
   }
 
-  // 刷新
   const refresh = () => {
     getTableData()
   }
 
-  // 搜索
   const search = (val: Query) => {
     query = val
     getTableData()
   }
 
   onMounted(() => {
-    if (config.immediateRequest !== false) {
+    if (crudConfig.value.immediateRequest !== false) {
       getTableData()
     }
   })
 
   return {
-    tableKey,
     tableData,
     isError,
     currentPage,

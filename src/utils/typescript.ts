@@ -10,6 +10,9 @@ export interface ButtonWithText extends PartialMutable<ButtonProps> {
   buttonText?: string
 }
 
+/**
+ * 合并组件的属性、监听事件和ref等等
+ */
 export type MergeAttrs<
   Props = Record<string, any>,
   Events = Record<string, any>
@@ -19,7 +22,14 @@ export type MergeAttrs<
     ref?: import('vue').VNodeRef
   }>
 
-export type WithNativeAttrs<T> = T & { style?: string; class?: string }
+/**
+ * 加入style、class、id...
+ */
+export type WithNativeAttrs<T> = T & {
+  style?: string
+  class?: string
+  id?: string
+}
 
 /**
  * 替换类型
@@ -54,6 +64,12 @@ export type ReplaceType<
  */
 export type RemoveUnionType<T, E> = T extends E ? never : T
 
+/**
+ * 可选，且不要只读
+ */
 export type PartialMutable<T> = Partial<Mutable<T>>
 
+/**
+ * 取出一些字段，且把这些字段变为可选
+ */
 export type PartialPick<T, K extends keyof T> = Partial<Pick<T, K>>

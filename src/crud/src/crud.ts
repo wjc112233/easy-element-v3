@@ -170,11 +170,14 @@ export interface CrudConfig<
 > {
   cacheKey?: string
   readonly primaryKey?: PrimaryKey
+
   columns: Cols
   requestApi: (
     params: PaginationParams<Query>
   ) => Promise<CrudResponse<DataItem>>
   immediateRequest?: false
+
+  tableAttrs?: MergeAttrs<Omit<ElTableInstance['$props'], 'data'>>
   tableIndex?:
     | true
     | PartialPick<ElTableColumnProps, 'index' | 'label' | 'fixed' | 'width'>
@@ -185,7 +188,6 @@ export interface CrudConfig<
         'selectable' | 'reserveSelection' | 'fixed' | 'width'
       >
   tableExpand?: TableExpand | TableExpand['render']
-  tableAttrs?: MergeAttrs<Omit<ElTableInstance['$props'], 'data'>>
   tableSlots?: Slots
   tableAction?: TableAction<DataItem> | TableAction<DataItem>['items']
 

@@ -127,12 +127,8 @@ const getButtonKey = (buttonConfig: TableActionButton) => {
 const buttons = computed(() => {
   return tableAction.value.items!.reduce(
     (res, item) => {
-      if (tableAction.value.useDropdown) {
-        if (item.dropdownItem !== false) {
-          res.dropdown[getButtonKey(item)] = item
-        } else {
-          res.outside[getButtonKey(item)] = item
-        }
+      if (tableAction.value.useDropdown && item.dropdownItem !== false) {
+        res.dropdown[getButtonKey(item)] = item
       } else {
         res.outside[getButtonKey(item)] = item
       }

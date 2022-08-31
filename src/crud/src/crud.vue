@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, isRef, provide, ref } from 'vue'
+import { isRef, ref } from 'vue'
 import {
   ElButton,
   ElCard,
@@ -8,31 +8,23 @@ import {
   ElTable,
   ElTableColumn,
 } from 'element-plus'
-import { isFunction, isString, merge, omit } from 'lodash-es'
+import { isFunction, omit } from 'lodash-es'
 import { RefreshLeft } from '@element-plus/icons-vue'
+
 import VTableAction from './table-action.vue'
 import CreateAndUpdatePopup from './create-and-update-popup.vue'
 import Setting from './setting.vue'
-import {
-  DEFAULT_PRIMARY_KEY,
-  type ElTableInstance,
-  type TableExpand,
-  type VTableColumn,
-  _crudProps,
-} from './crud'
+
+import { type ElTableInstance, _crudProps } from './crud'
 import { useData } from './useData'
-import { CacheManagement, cacheManagementInjectKey } from './useCache'
-import { transformItems } from './helpers'
-import { VForm, type VFormConfig } from '@/form'
+import { useCache } from './useCache'
+import { useResolveConfig } from './useResolveConfig'
+
+import { VForm } from '@/form'
 import { RenderFn } from '@/utils/RenderFn'
 
 const props = defineProps(_crudProps)
-
-const cacheManegement = new CacheManagement(props.config)
-provide(cacheManagementInjectKey, cacheManegement)
-const crudConfig = computed(() => {
-  return cacheManegement.mergeConfig()
-})
+const { crudConfig } = useCache(props.config)
 
 const elTableRef = ref<ElTableInstance>()
 const createAndUpdatePopupRef = ref<InstanceType<typeof CreateAndUpdatePopup>>()
@@ -47,7 +39,6 @@ const setTableRef = (instance: any, refs: any) => {
 }
 
 const {
-  tableKey,
   tableData,
   isError,
   currentPage,
@@ -56,111 +47,21 @@ const {
   getTableData,
   refresh,
   search,
-} = useData({ config: crudConfig.value, elTableRef })
+} = useData(crudConfig)
 
-const tableAttrs = computed(() => {
-  return Object.assign(
-    {
-      rowKey: crudConfig.value.primaryKey || DEFAULT_PRIMARY_KEY,
-    },
-    crudConfig.value.tableAttrs
-  )
-})
-
-const tableExpand = computed<TableExpand>(() => {
-  if (isFunction(crudConfig.value.tableExpand)) {
-    return {
-      render: crudConfig.value.tableExpand,
-    }
-  } else {
-    return crudConfig.value.tableExpand!
-  }
-})
-
-const tableColumns = computed(() => {
-  const columns = { ...crudConfig.value.columns }
-  for (const k in columns) {
-    if (isString(columns[k])) {
-      columns[k] = { label: columns[k] as string }
-    }
-  }
-  return columns as Record<string, VTableColumn>
-})
-
-const searchConfig = computed(() => {
-  if (!crudConfig.value.searchConfig) {
-    return null
-  }
-
-  const conf = { ...crudConfig.value.searchConfig }
-
-  conf.itemColAttrs = Object.assign(
-    {
-      offset: 1,
-      span: 7,
-    },
-    conf.itemColAttrs
-  )
-
-  conf.action = merge(
-    {},
-    {
-      notResetFormAfterSubmited: true,
-      colAttrs: { span: 24, style: 'text-align:center' },
-      submitButton: { text: '搜索' },
-    },
-    conf.action
-  )
-  const originalOnSubmit = conf.action.onSubmit
-  conf.action.onSubmit = (data) => {
-    search(data)
-    originalOnSubmit?.(data)
-  }
-  const originalOnReset = conf.action.onReset
-  conf.action.onReset = () => {
-    search({})
-    originalOnReset?.()
-  }
-
-  conf.items = transformItems(conf.items, crudConfig.value.columns)
-
-  return conf as VFormConfig
-})
-
-const paginationConfig = computed(() => {
-  const conf = Object.assign(
-    {
-      pageSizes: [10, 20, 30, 40, 50, 100],
-      total: totalCount.value || 0,
-      layout: 'total,sizes,prev,pager,next,jumper',
-    },
-    crudConfig.value.paginationAttrs
-  )
-  const originalOnSizeChange = conf['onSize-change']
-  const originalOnCurrentChange = conf['onCurrent-change']
-  conf['onSize-change'] = (val) => {
-    refresh()
-    originalOnSizeChange?.(val)
-  }
-  conf['onCurrent-change'] = (val) => {
-    getTableData()
-    originalOnCurrentChange?.(val)
-  }
-  return conf
-})
-
-const createButton = computed(() => {
-  if (!crudConfig.value.handleCreate) {
-    return null
-  }
-
-  const defaultAttrs = {
-    name: '新增',
-    attrs: { type: 'primary' } as const,
-  }
-  return isFunction(crudConfig.value.handleCreate)
-    ? defaultAttrs
-    : merge(defaultAttrs, crudConfig.value.handleCreate)
+const {
+  tableAttrs,
+  tableExpand,
+  tableColumns,
+  searchConfig,
+  paginationConfig,
+  createButton,
+} = useResolveConfig({
+  crudConfig,
+  search,
+  totalCount,
+  getTableData,
+  refresh,
 })
 </script>
 
@@ -196,12 +97,7 @@ const createButton = computed(() => {
 
       <slot name="menu-bottom" />
 
-      <ElTable
-        :ref="setTableRef"
-        :key="tableKey"
-        :data="tableData"
-        v-bind="tableAttrs"
-      >
+      <ElTable :ref="setTableRef" :data="tableData" v-bind="tableAttrs">
         <template #empty>
           <template v-if="!crudConfig.tableSlots?.empty">
             <template v-if="!isError">暂无数据</template>
