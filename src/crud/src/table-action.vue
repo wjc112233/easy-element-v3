@@ -177,13 +177,13 @@ const getElPopconfirmAttrs = (confirm: TableActionButton['confirm']) => {
 }
 
 const RenderButton = ({
-  buttonConfig,
+  'button-config': buttonConfig,
+  'button-key': buttonKey,
   data,
   rowIndex,
-  buttonKey,
 }: {
-  buttonKey: number
-  buttonConfig: TableActionButton
+  'button-key': number
+  'button-config': TableActionButton
   data: Record<string, any>
   rowIndex: number
 }) => {

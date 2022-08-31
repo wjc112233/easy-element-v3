@@ -1,5 +1,6 @@
-import { type ComputedRef, type Ref, computed } from 'vue'
+import { type ComputedRef, type Ref, computed, h } from 'vue'
 import { isFunction, isString, merge } from 'lodash-es'
+import { ElTag } from 'element-plus'
 import {
   type CrudConfig,
   DEFAULT_PRIMARY_KEY,
@@ -46,6 +47,31 @@ export const useResolveConfig = ({
     for (const k in columns) {
       if (isString(columns[k])) {
         columns[k] = { label: columns[k] as string }
+      }
+      // 处理存在数据字典的情况
+      if ((columns[k] as VTableColumn).dicts) {
+        columns[k] = Object.assign(
+          {
+            renderContent({ value, dict }) {
+              if (dict?.textColor) {
+                return h(
+                  'span',
+                  { style: `color:${dict.textColor}` },
+                  dict.label
+                )
+              } else if (dict?.tag !== undefined) {
+                return h(
+                  ElTag,
+                  isString(dict.tag) ? { type: dict.tag } : dict.tag,
+                  { default: () => dict.label }
+                )
+              } else {
+                return h('span', dict?.label ?? value)
+              }
+            },
+          } as VTableColumn,
+          columns[k]
+        )
       }
     }
     return columns as Record<string, VTableColumn>
