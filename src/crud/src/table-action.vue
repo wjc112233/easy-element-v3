@@ -1,13 +1,15 @@
 <script setup lang="tsx">
-import { type PropType, computed, h, isRef, reactive } from 'vue'
+import { type PropType, computed, h, inject, isRef, reactive } from 'vue'
 import {
   ElButton,
   ElDropdown,
   ElDropdownItem,
   ElDropdownMenu,
   ElIcon,
-  ElPopconfirm,
+  ElMessageBox,
+  type ElMessageBoxOptions,
   ElTableColumn,
+  POPPER_INJECTION_KEY,
 } from 'element-plus'
 import {
   isArray,
@@ -16,6 +18,7 @@ import {
   isFunction,
   isPlainObject,
   isString,
+  isUndefined,
   merge,
   omit,
 } from 'lodash-es'
@@ -103,10 +106,17 @@ const resolveUpdateButton = () => {
   }
 }
 
+const dropdownInstances: Array<InstanceType<typeof ElDropdown>> = []
+const setDropdownInstance = (instance: any, rowIndex: number) => {
+  dropdownInstances[rowIndex] = instance
+}
 const dropdownAttrs = computed(() => {
   const useDropdown = tableAction.value.useDropdown
   return Object.assign(
-    { trigger: 'click', hideOnClick: false },
+    {
+      trigger: 'click',
+      hideOnClick: false,
+    },
     isBoolean(useDropdown) ? { text: '更多' } : useDropdown
   )
 })
@@ -163,29 +173,54 @@ const handleClick = (
     cancelLoading: () => setButtonLoading(rowIndex, key, false),
     setData: (key: string, value: any) => (data[key] = value),
   }
-  buttonConfig.click(data, methods)
-}
 
-const getElPopconfirmAttrs = (confirm: TableActionButton['confirm']) => {
-  if (isBoolean(confirm)) {
-    return { title: '是否确定？' }
-  } else if (isString(confirm)) {
-    return { title: confirm }
+  let options: ElMessageBoxOptions | undefined
+  if (isBoolean(buttonConfig.confirm)) {
+    options = { message: '是否确定？' }
+  } else if (isString(buttonConfig.confirm)) {
+    options = { message: buttonConfig.confirm }
+  } else if (!isUndefined(buttonConfig.confirm)) {
+    options = buttonConfig.confirm
+  }
+
+  if (options) {
+    const originalBeforeClose = options.beforeClose
+    ElMessageBox({
+      title: '提示',
+      // 保持下拉菜单不关闭
+      beforeClose(...args) {
+        const done = args[2]
+        const wrapperDone = () => {
+          done()
+          dropdownInstances[rowIndex]?.handleOpen()
+        }
+        if (originalBeforeClose) {
+          originalBeforeClose(args[0], args[1], wrapperDone)
+        } else {
+          wrapperDone()
+        }
+      },
+      ...options,
+    }).then(() => {
+      buttonConfig.click(data, methods)
+    })
   } else {
-    return confirm!
+    buttonConfig.click(data, methods)
   }
 }
 
 const RenderButton = ({
   'button-config': buttonConfig,
   'button-key': buttonKey,
+  'row-index': rowIndex,
   data,
-  rowIndex,
+  dropdown,
 }: {
   'button-key': number
   'button-config': TableActionButton
   data: Record<string, any>
-  rowIndex: number
+  'row-index': number
+  dropdown: boolean
 }) => {
   if (
     (isRef(buttonConfig.show) && !buttonConfig.show.value) ||
@@ -207,21 +242,23 @@ const RenderButton = ({
   }
   button.attrs.loading = getButtonLoading(rowIndex, buttonKey)
 
-  const onClick = () => handleClick(data, buttonConfig, rowIndex, buttonKey)
-  const realButton = (withClick: boolean) => (
-    <ElButton {...button.attrs} onClick={withClick ? onClick : undefined}>
+  const realButton = () => (
+    <ElButton
+      {...button.attrs}
+      onClick={() => handleClick(data, buttonConfig, rowIndex, buttonKey)}
+    >
       {{ default: () => button.name }}
     </ElButton>
   )
-  return buttonConfig.confirm ? (
-    <ElPopconfirm
-      {...getElPopconfirmAttrs(buttonConfig.confirm)}
-      onConfirm={onClick}
-    >
-      {{ reference: () => realButton(false) }}
-    </ElPopconfirm>
+
+  return dropdown ? (
+    realButton()
   ) : (
-    realButton(true)
+    <ElDropdownItem>
+      {{
+        default: realButton,
+      }}
+    </ElDropdownItem>
   )
 }
 </script>
@@ -243,6 +280,7 @@ const RenderButton = ({
       />
       <ElDropdown
         v-if="tableAction.useDropdown && !isEmpty(buttons.dropdown)"
+        :ref="(instance) => setDropdownInstance(instance, $index)"
         v-bind="omit(dropdownAttrs, 'text')"
         class="table-action-dropdown"
       >
@@ -254,17 +292,15 @@ const RenderButton = ({
         </span>
         <template #dropdown>
           <ElDropdownMenu>
-            <ElDropdownItem
+            <RenderButton
               v-for="(buttonConfig, key) in buttons.dropdown"
               :key="key"
-            >
-              <RenderButton
-                :button-key="key"
-                :button-config="buttonConfig"
-                :data="row"
-                :row-index="$index"
-              />
-            </ElDropdownItem>
+              :button-key="key"
+              :button-config="buttonConfig"
+              :data="row"
+              :row-index="$index"
+              dropdown
+            />
           </ElDropdownMenu>
         </template>
       </ElDropdown>

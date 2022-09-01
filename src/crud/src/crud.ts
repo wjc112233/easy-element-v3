@@ -1,5 +1,5 @@
+import type { ButtonProps, ElMessageBoxOptions, TagProps } from 'element-plus'
 import type { DefineComponent, PropType, Ref, Slots, VNode } from 'vue'
-import type { ButtonProps, PopconfirmProps, TagProps } from 'element-plus'
 import type {
   MergeAttrs,
   PartialMutable,
@@ -131,7 +131,7 @@ export interface TableActionButton<DataItem = Record<string, any>> {
   ) => void
   show?: Ref<boolean> | ((data: DataItem) => boolean)
   dropdownItem?: false | Mutable<ElDropDownItemProps>
-  confirm?: boolean | string | PartialMutable<PopconfirmProps>
+  confirm?: boolean | string | ElMessageBoxOptions
 }
 type HandleDelete<DataItem = Record<string, any>> = Pick<
   TableActionButton<DataItem>,
