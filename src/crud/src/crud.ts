@@ -86,11 +86,17 @@ export interface VTableColumn<
     | 'label'
     | 'type'
     | 'index'
+    | 'formatter'
     | 'selectable'
     | 'reserveSelection'
   >
+  children?: DataItem[Prop] extends number | string | boolean
+    ? undefined
+    : Columns<DataItem[Prop]>
   dicts?: Array<Dict<DataItem[Prop]>>
+  formatter?: ElTableColumnProps['formatter']
   renderContent?: (
+    this: VTableColumn<DataItem, Prop>,
     attrs: {
       value: DataItem[Prop]
       dict?: Dict<DataItem[Prop]>
@@ -172,6 +178,7 @@ export interface CrudConfig<
   readonly primaryKey?: PrimaryKey
 
   columns: Cols
+
   requestApi: (
     params: PaginationParams<Query>
   ) => Promise<CrudResponse<DataItem>>

@@ -9,7 +9,6 @@ import {
   ElMessageBox,
   type ElMessageBoxOptions,
   ElTableColumn,
-  POPPER_INJECTION_KEY,
 } from 'element-plus'
 import {
   isArray,

@@ -42,41 +42,6 @@ export const useResolveConfig = ({
     }
   })
 
-  const tableColumns = computed(() => {
-    const columns = { ...crudConfig.value.columns }
-    for (const k in columns) {
-      if (isString(columns[k])) {
-        columns[k] = { label: columns[k] as string }
-      }
-      // 处理存在数据字典的情况
-      if ((columns[k] as VTableColumn).dicts) {
-        columns[k] = Object.assign(
-          {
-            renderContent({ value, dict }) {
-              if (dict?.textColor) {
-                return h(
-                  'span',
-                  { style: `color:${dict.textColor}` },
-                  dict.label
-                )
-              } else if (dict?.tag !== undefined) {
-                return h(
-                  ElTag,
-                  isString(dict.tag) ? { type: dict.tag } : dict.tag,
-                  { default: () => dict.label }
-                )
-              } else {
-                return h('span', dict?.label ?? value)
-              }
-            },
-          } as VTableColumn,
-          columns[k]
-        )
-      }
-    }
-    return columns as Record<string, VTableColumn>
-  })
-
   const searchConfig = computed(() => {
     if (!crudConfig.value.searchConfig) {
       return null
@@ -156,7 +121,6 @@ export const useResolveConfig = ({
   return {
     tableAttrs,
     tableExpand,
-    tableColumns,
     searchConfig,
     paginationConfig,
     createButton,

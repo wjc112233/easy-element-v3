@@ -11,6 +11,7 @@ import {
 import { isFunction, omit } from 'lodash-es'
 import { RefreshLeft } from '@element-plus/icons-vue'
 
+import FieldColumns from './field-columns.vue'
 import VTableAction from './table-action.vue'
 import CreateAndUpdatePopup from './create-and-update-popup.vue'
 import Setting from './setting.vue'
@@ -24,7 +25,13 @@ import { VForm } from '@/form'
 import { RenderFn } from '@/utils/RenderFn'
 
 const props = defineProps(_crudProps)
-const { crudConfig } = useCache(props.config)
+
+const tableKey = ref(0)
+const reloadTable = () => {
+  tableKey.value = Date.now()
+}
+
+const { crudConfig } = useCache(props.config, reloadTable)
 
 const elTableRef = ref<ElTableInstance>()
 const createAndUpdatePopupRef = ref<InstanceType<typeof CreateAndUpdatePopup>>()
@@ -52,7 +59,6 @@ const {
 const {
   tableAttrs,
   tableExpand,
-  tableColumns,
   searchConfig,
   paginationConfig,
   createButton,
@@ -97,7 +103,12 @@ const {
 
       <slot name="menu-bottom" />
 
-      <ElTable :ref="setTableRef" :data="tableData" v-bind="tableAttrs">
+      <ElTable
+        :key="tableKey"
+        :ref="setTableRef"
+        :data="tableData"
+        v-bind="tableAttrs"
+      >
         <template #empty>
           <template v-if="!crudConfig.tableSlots?.empty">
             <template v-if="!isError">暂无数据</template>
@@ -136,30 +147,7 @@ const {
           v-bind="crudConfig.tableIndex === true ? {} : crudConfig.tableIndex"
         />
 
-        <ElTableColumn
-          v-for="(col, prop, index) in tableColumns"
-          :key="index"
-          :width="col.width"
-          :label="col.label"
-          :prop="prop"
-          v-bind="col.attrs"
-        >
-          <template v-if="col.renderHeader" #header="scope">
-            <RenderFn :component="col.renderHeader" v-bind="scope" />
-          </template>
-          <template v-if="col.renderContent" #default="scope">
-            <RenderFn
-              :component="col.renderContent"
-              :value="scope.row[prop]"
-              :dict="
-                col.dicts
-                  ? col.dicts.find((d) => d.value === scope.row[prop])
-                  : undefined
-              "
-              v-bind="scope"
-            />
-          </template>
-        </ElTableColumn>
+        <FieldColumns :columns="crudConfig.columns" />
 
         <VTableAction
           v-if="

@@ -26,9 +26,12 @@ export class CacheManagement {
     return this.record
   }
 
+  reloadTable: () => void
+
   private originalOnHeaderDragend: ((...args: any[]) => any) | undefined
 
-  constructor(config: CrudConfig) {
+  constructor(config: CrudConfig, reloadTable: () => void) {
+    this.reloadTable = reloadTable
     this.conf = config
     this.originalOnHeaderDragend = config.tableAttrs?.['onHeader-dragend']
     const r: any = config.cacheKey && localStorage.getItem(this._getKey())
@@ -107,6 +110,7 @@ export class CacheManagement {
 
   setRecord(r: TableRecord) {
     merge(this.record, r)
+    this.reloadTable()
     localStorage.setItem(this._getKey(), JSON.stringify(this.record))
   }
 
@@ -154,8 +158,8 @@ export class CacheManagement {
   }
 }
 
-export const useCache = (config: CrudConfig) => {
-  const cacheManegement = new CacheManagement(config)
+export const useCache = (config: CrudConfig, reloadTable: () => void) => {
+  const cacheManegement = new CacheManagement(config, reloadTable)
   provide(cacheManagementInjectKey, cacheManegement)
   const crudConfig = computed(() => {
     return cacheManegement.mergeConfig()
