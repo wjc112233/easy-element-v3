@@ -1,8 +1,6 @@
 const { resolve } = require('path')
 const { rollup } = require('rollup')
-const Serve = require('rollup-plugin-serve')
 const alias = require('@rollup/plugin-alias')
-const Livereload = require('rollup-plugin-livereload')
 const Vue = require('rollup-plugin-vue')
 const NodeResolve = require('@rollup/plugin-node-resolve').default
 const Commonjs = require('@rollup/plugin-commonjs')
@@ -16,10 +14,7 @@ const projRoot = resolve(__dirname, '..')
 const buildFile = async () => {
   const peerDependencies = Object.keys(pkgJson.peerDependencies)
   const bundle = await rollup({
-    input: 'src/index.ts',
-    watch: {
-      include: ['src/**'],
-    },
+    input: resolve(projRoot, 'src/index.ts'),
     plugins: [
       alias({
         entries: [
@@ -45,11 +40,6 @@ const buildFile = async () => {
         },
         jsxFactory: 'h',
       }),
-      Serve({
-        port: 3000,
-        contentBase: 'example',
-      }),
-      Livereload('example'),
     ],
     external: (id) => {
       return peerDependencies.some((pkg) => {
@@ -60,7 +50,7 @@ const buildFile = async () => {
   bundle.write({
     name: 'EasyElement',
     format: 'iife',
-    dir: resolve(projRoot, 'example/'),
+    dir: resolve(projRoot, 'dist/'),
     exports: undefined,
     globals: {
       vue: 'Vue',

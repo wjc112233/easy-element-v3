@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import { type PropType, computed, h, inject, isRef, reactive } from 'vue'
+import { type PropType, computed, h, isRef, reactive } from 'vue'
 import {
   ElButton,
   ElDropdown,

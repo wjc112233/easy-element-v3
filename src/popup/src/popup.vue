@@ -75,6 +75,12 @@ const dialogAttrs = computed(() => {
   >
   attrs.appendToBody = attrs.appendToBody ?? hasPopupInChains
   attrs.customClass = `${attrs.customClass || ''} ${_class}`
+  // 没有设置宽度的话，就使用自适应宽度
+  if (!attrs.width) {
+    attrs.width = 'auto'
+    attrs.customClass +=
+      ' el-col-xs-22 el-col-sm-22 el-col-md-12 el-col-lg-12 el-col-xl-8'
+  }
   if (props.fullscreenable) {
     attrs.fullscreen = isFullscreen.value
   }

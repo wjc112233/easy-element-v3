@@ -1,12 +1,6 @@
 import { type ComputedRef, type Ref, computed, h } from 'vue'
-import { isFunction, isString, merge } from 'lodash-es'
-import { ElTag } from 'element-plus'
-import {
-  type CrudConfig,
-  DEFAULT_PRIMARY_KEY,
-  type TableExpand,
-  type VTableColumn,
-} from './crud'
+import { isFunction, merge } from 'lodash-es'
+import { type CrudConfig, DEFAULT_PRIMARY_KEY, type TableExpand } from './crud'
 import { transformItems } from './helpers'
 import type { VFormConfig } from '@/form'
 

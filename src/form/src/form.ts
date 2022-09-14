@@ -3,6 +3,7 @@ import type {
   ButtonWithText,
   MergeAttrs,
   PartialMutable,
+  ReplaceType,
   SetDataFn,
   WithNativeAttrs,
 } from '@/utils/typescript'
@@ -100,8 +101,8 @@ export interface VFormConfig<FormModel = Record<string, any>> {
   items: {
     [K in keyof FormModel]?: VFormItem<FormModel, K>
   }
-  formAttrs?: MergeAttrs<Mutable<FormInstance['props']>>
-  rowAttrs?: WithNativeAttrs<Partial<Mutable<RowProps>>>
+  formAttrs?: MergeAttrs<PartialMutable<FormInstance['props']>>
+  rowAttrs?: WithNativeAttrs<PartialMutable<RowProps>>
   itemColAttrs?: ColAttrs
   action:
     | false

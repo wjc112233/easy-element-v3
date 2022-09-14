@@ -1,25 +1,23 @@
 <script lang="ts" setup>
-import { isRef, ref } from 'vue'
+import { computed, isRef, provide, ref } from 'vue'
 import {
   ElButton,
   ElCard,
-  ElIcon,
   ElPagination,
   ElTable,
   ElTableColumn,
 } from 'element-plus'
 import { isFunction, omit } from 'lodash-es'
-import { RefreshLeft } from '@element-plus/icons-vue'
 
 import FieldColumns from './field-columns.vue'
 import VTableAction from './table-action.vue'
 import CreateAndUpdatePopup from './create-and-update-popup.vue'
-import Setting from './setting.vue'
 
 import { type ElTableInstance, _crudProps } from './crud'
 import { useData } from './useData'
-import { useCache } from './useCache'
 import { useResolveConfig } from './useResolveConfig'
+import { crudInjectKey } from './injectKeys'
+import type { CacheManagement } from './tools/cache-management'
 
 import { VForm } from '@/form'
 import { RenderFn } from '@/utils/RenderFn'
@@ -31,10 +29,13 @@ const reloadTable = () => {
   tableKey.value = Date.now()
 }
 
-const { crudConfig } = useCache(props.config, reloadTable)
+const cacheManagement = ref<CacheManagement | undefined>()
+const crudConfig = computed(() => {
+  return cacheManagement.value?.mergeConfig() || props.config
+})
 
-const elTableRef = ref<ElTableInstance>()
 const createAndUpdatePopupRef = ref<InstanceType<typeof CreateAndUpdatePopup>>()
+const elTableRef = ref<ElTableInstance>()
 const setTableRef = (instance: any, refs: any) => {
   const { ref } = crudConfig.value.tableAttrs ?? {}
   if (isRef(ref)) {
@@ -55,6 +56,16 @@ const {
   refresh,
   search,
 } = useData(crudConfig)
+
+provide(crudInjectKey, {
+  cacheManagement,
+  reloadTable,
+  baseConfig: props.config,
+  crudConfig,
+  tableData,
+  elTableRef,
+  refresh,
+})
 
 const {
   tableAttrs,
@@ -96,8 +107,6 @@ const {
         </div>
         <div class="menu-right">
           <slot name="menu-right" />
-          <ElIcon class="tool-icon" @click="refresh"><RefreshLeft /></ElIcon>
-          <Setting :config="config" />
         </div>
       </div>
 

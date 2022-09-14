@@ -105,6 +105,35 @@ const formItems = computed(() => {
   }, {} as Items)
 })
 
+const methods: FormRawBindings = {
+  setValue: (key, value) => {
+    Reflect.set(model.value, key, value)
+  },
+  deleteKey: (key) => {
+    Reflect.deleteProperty(model.value, key)
+    syncFormModel()
+  },
+  deleteAllKey: () => {
+    Object.keys(model.value).forEach((key) => {
+      Reflect.deleteProperty(model.value, key)
+    })
+    syncFormModel()
+  },
+  validate: async () => {
+    await elFormRef.value!.validate()
+    return { ...model.value }
+  },
+  reset: () => {
+    Object.keys(model.value).forEach((key) => {
+      Reflect.deleteProperty(model.value, key)
+    })
+    nextTick(() => {
+      syncFormModel()
+      formKey.value = Date.now()
+    })
+  },
+}
+
 /**
  * 使表单对象里的字段始终与页面表单显示的字段保持一致
  */
@@ -154,35 +183,6 @@ const formRules = computed(() => {
     return res
   }, {} as { [k in keyof Items]?: FormItemRule })
 })
-
-const methods: FormRawBindings = {
-  setValue: (key, value) => {
-    Reflect.set(model.value, key, value)
-  },
-  deleteKey: (key) => {
-    Reflect.deleteProperty(model.value, key)
-    syncFormModel()
-  },
-  deleteAllKey: () => {
-    Object.keys(model.value).forEach((key) => {
-      Reflect.deleteProperty(model.value, key)
-    })
-    syncFormModel()
-  },
-  validate: async () => {
-    await elFormRef.value!.validate()
-    return { ...model.value }
-  },
-  reset: () => {
-    Object.keys(model.value).forEach((key) => {
-      Reflect.deleteProperty(model.value, key)
-    })
-    nextTick(() => {
-      syncFormModel()
-      formKey.value = Date.now()
-    })
-  },
-}
 
 type Action = typeof props.config.action
 

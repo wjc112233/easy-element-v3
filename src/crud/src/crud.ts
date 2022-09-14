@@ -80,7 +80,7 @@ export interface VTableColumn<
   width?: number | string
   label: string
   attrs?: Omit<
-    ElTableColumnProps,
+    PartialMutable<ElTableColumnProps>,
     | 'width'
     | 'prop'
     | 'label'
@@ -105,16 +105,16 @@ export interface VTableColumn<
   renderHeader?: (attrs: ColumnHeaderSlotScope<DataItem>) => VNode
 }
 
-export type TableExpand = PartialPick<
-  ElTableColumnProps,
+export type TableExpand = Pick<
+  PartialMutable<ElTableColumnProps>,
   'label' | 'fixed' | 'width'
 > & {
   render: (attrs: ColumnExpandSlotScope) => VNode
 }
-export type TableAction<DataItem = Record<string, any>> = PartialPick<
-  ElTableColumnProps,
-  'label' | 'fixed' | 'width'
-> & {
+export type TableAction<DataItem = Record<string, any>> = {
+  label?: string
+  fixed?: ElTableColumnProps['fixed']
+  width?: ElTableColumnProps['width']
   items?: Array<TableActionButton<DataItem>>
   buttonAttrs?: WithNativeAttrs<PartialMutable<ButtonProps>>
   useDropdown?: true | (Mutable<ElDropDownProps> & { text?: string })
@@ -177,26 +177,32 @@ export interface CrudConfig<
   cacheKey?: string
   readonly primaryKey?: PrimaryKey
 
-  columns: Cols
-
   requestApi: (
     params: PaginationParams<Query>
   ) => Promise<CrudResponse<DataItem>>
   immediateRequest?: false
 
-  tableAttrs?: MergeAttrs<Omit<ElTableInstance['$props'], 'data'>>
+  columns: Cols
+
+  // tableAttrs?: MergeAttrs<Omit<ElTableInstance['$props'], 'data'>>
+  tableAttrs?: PartialMutable<Omit<ElTableInstance['$props'], 'data'>>
+  // tableAttrs?: Omit<ElTableInstance['$props'], 'data'>
+
   tableIndex?:
     | true
-    | PartialPick<ElTableColumnProps, 'index' | 'label' | 'fixed' | 'width'>
+    | Pick<
+        PartialMutable<ElTableColumnProps>,
+        'index' | 'label' | 'fixed' | 'width'
+      >
   tableSelection?:
     | true
-    | PartialPick<
-        ElTableColumnProps,
+    | Pick<
+        PartialMutable<ElTableColumnProps>,
         'selectable' | 'reserveSelection' | 'fixed' | 'width'
       >
+  tableAction?: TableAction<DataItem> | TableAction<DataItem>['items']
   tableExpand?: TableExpand | TableExpand['render']
   tableSlots?: Slots
-  tableAction?: TableAction<DataItem> | TableAction<DataItem>['items']
 
   handleDelete?: HandleDelete<DataItem> | HandleDelete<DataItem>['handler']
   handleUpdate?:
@@ -207,6 +213,7 @@ export interface CrudConfig<
     | HandleCreate<DataForCreate>['handler']
 
   searchConfig?: CrudForm<Query, keyof Cols>
+
   createAndUpdateConfig?:
     | CreateAndUpdateConfig<
         DataForCreate,

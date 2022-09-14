@@ -26,7 +26,7 @@ export const usePopup = function <T>(config: PopupConfig<T>, slots?: Slots) {
     }
   })
 
-  return {
+  const popup = {
     show: async (params?: T) => {
       if (config.beforeShow) {
         const ret = await config.beforeShow(params)
@@ -34,11 +34,17 @@ export const usePopup = function <T>(config: PopupConfig<T>, slots?: Slots) {
           return
         }
       }
+      popup.params = params
       popupRef.value?.show()
     },
-    close: () => popupRef.value?.close(),
+    params: undefined as T | undefined,
+    close: () => {
+      popupRef.value?.close()
+    },
     setContentLoading: (val: boolean) => popupRef.value?.setContentLoading(val),
     reload: () => popupRef.value?.reload(),
     toggleIsFullscreen: () => popupRef.value?.toggleIsFullscreen(),
   }
+
+  return popup
 }

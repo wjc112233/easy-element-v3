@@ -31,3 +31,10 @@ export function transformItems(items: CrudForm['items'], columns: Columns) {
   }
   return items as Record<string, VFormItem>
 }
+
+export function normalizeColumn(column: Columns[string]) {
+  if (!column) {
+    return
+  }
+  return isString(column) ? { label: column } : column
+}

@@ -16,7 +16,8 @@
     "src/**/*.ts",
     "src/**/*.d.ts",
     "types/**/*.d.ts",
-    "env.d.ts"
+    "env.d.ts",
+    "example/**/*.vue"
   ],
   "exclude": ["node_modules", "dist", "**/*.js"]
 }
