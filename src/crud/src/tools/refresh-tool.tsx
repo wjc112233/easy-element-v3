@@ -1,7 +1,7 @@
 import { h, inject } from 'vue'
 import { ElIcon } from 'element-plus'
 import { RefreshLeft } from '@element-plus/icons-vue'
-import { crudInjectKey } from '../injectKeys'
+import { crudInjectKey } from '../inject-keys'
 
 export const RefreshTool = () => {
   const { refresh } = inject(crudInjectKey)!

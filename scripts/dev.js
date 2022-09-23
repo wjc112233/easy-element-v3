@@ -1,7 +1,8 @@
 const { resolve } = require('path')
 const { rollup } = require('rollup')
 const alias = require('@rollup/plugin-alias')
-const Vue = require('rollup-plugin-vue')
+const Vue = require('@vitejs/plugin-vue')
+const VueJsx = require('@vitejs/plugin-vue-jsx')
 const NodeResolve = require('@rollup/plugin-node-resolve').default
 const Commonjs = require('@rollup/plugin-commonjs')
 const esbuild = require('rollup-plugin-esbuild').default
@@ -27,6 +28,7 @@ const buildFile = async () => {
       Vue({
         isProduction: false,
       }),
+      VueJsx(),
       Postcss(),
       NodeResolve({
         extensions: ['.mjs', '.js', '.json', '.ts'],
@@ -38,7 +40,6 @@ const buildFile = async () => {
         loaders: {
           '.vue': 'ts',
         },
-        jsxFactory: 'h',
       }),
     ],
     external: (id) => {

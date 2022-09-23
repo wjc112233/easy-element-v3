@@ -14,9 +14,9 @@ import VTableAction from './table-action.vue'
 import CreateAndUpdatePopup from './create-and-update-popup.vue'
 
 import { type ElTableInstance, _crudProps } from './crud'
-import { useData } from './useData'
-import { useResolveConfig } from './useResolveConfig'
-import { crudInjectKey } from './injectKeys'
+import { useData } from './use-data'
+import { useResolveConfig } from './use-resolve-config'
+import { crudInjectKey } from './inject-keys'
 import type { CacheManagement } from './tools/cache-management'
 
 import { VForm } from '@/form'

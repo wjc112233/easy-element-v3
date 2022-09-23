@@ -1,4 +1,4 @@
-import { type InjectionKey, type Ref, reactive } from 'vue'
+import { reactive } from 'vue'
 import {
   cloneDeep,
   get,
@@ -59,7 +59,10 @@ export class CacheManagement {
       __action__: columnsRecord[SpecialColumnsEnum.ACTION],
       __selection__: columnsRecord[SpecialColumnsEnum.SELECTION],
       __expand__: columnsRecord[SpecialColumnsEnum.EXPAND],
-      fieldsRecord: omit(columnsRecord, Object.values(SpecialColumnsEnum)),
+      fieldsRecord: omit(
+        columnsRecord,
+        Object.values(SpecialColumnsEnum)
+      ) as Record<string, ColumnCacheRecord>,
     }
   }
 

@@ -15,13 +15,13 @@ export function useData<
 >(crudConfig: ComputedRef<CrudConfig<DataItem, Query>>) {
   const vm = getCurrentInstance()
 
-  const tableData = reactive<Array<DataItem>>([])
+  const tableData: Array<DataItem> = reactive([])
   const currentPage = ref(1)
   const totalPages = ref<number>(0)
   const totalCount = ref<number>(0)
   const pageSize = ref(crudConfig.value.paginationAttrs?.defaultPageSize ?? 10)
   const isError = ref(false)
-  let query: Record<string, any> = {}
+  let query: any = {}
 
   const getTableData = async () => {
     const loading = ElLoading.service({

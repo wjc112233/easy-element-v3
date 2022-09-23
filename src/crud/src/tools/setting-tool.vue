@@ -5,7 +5,7 @@ import { ElIcon, ElPopover, ElTooltip, ElTree } from 'element-plus'
 import { isArray, isBoolean, isString } from 'lodash-es'
 import { Download, Rank, Setting } from '@element-plus/icons-vue'
 
-import { crudInjectKey } from '../injectKeys'
+import { crudInjectKey } from '../inject-keys'
 import {
   CacheManagement,
   type ColumnCacheRecord,
